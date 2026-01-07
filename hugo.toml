@@ -2,6 +2,9 @@ baseURL = 'https://blog.butubb.cn/'
 languageCode = 'zh-cn'
 title = '日志'
 theme = 'PaperMod'
+defaultContentLanguage = 'zh-cn'
+
+
 
 [params]
   defaultTheme = "auto"
@@ -20,16 +23,11 @@ theme = 'PaperMod'
   weight = 1
 
 [[menu.main]]
-  name = "博文"
-  url = "/posts"
+  name = "归档"
+  url = "/archives"
   weight = 2
 
 [[menu.main]]
   name = "标签"
   url = "/tags"
   weight = 3
-
-[[menu.main]]
-  name = "学习"
-  url = "/study"
-  weight = 4
