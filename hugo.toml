@@ -1,12 +1,12 @@
 baseURL = 'https://8butubb.github.io/'
 languageCode = 'zh-cn'
-title = '我的博客'
+title = '日志'
 theme = 'PaperMod'
 
 [params]
   defaultTheme = "auto"
   # 内联表必须写在一行内
-  homeInfoParams = { Title = "你好，我是butubb", Content = "欢迎来到我的博客主页：个人 / 博客 / 教程" }
+  homeInfoParams = { Title = "你好！我是butubb，安徽人，现工作居住在苏州。", Content = "喜欢互联网冲浪🏄‍♂️，折腾机器💻，看电影🎥，编程🧑‍💻，听音乐🎶等" }
 
 
 [taxonomies]
@@ -15,16 +15,21 @@ theme = 'PaperMod'
   category = "categories"
 
 [[menu.main]]
-  name = "个人"
-  url = "/posts"
+  name = "首页"
+  url = "/"
   weight = 1
 
 [[menu.main]]
-  name = "教程"
-  url = "/docs"
+  name = "博文"
+  url = "/posts"
   weight = 2
+
+[[menu.main]]
+  name = "标签"
+  url = "/tags"
+  weight = 3
 
 [[menu.main]]
   name = "学习"
   url = "/study"
-  weight = 3
+  weight = 4
