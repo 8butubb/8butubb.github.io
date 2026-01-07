@@ -1,4 +1,4 @@
-baseURL = 'https://8butubb.github.io/'
+baseURL = 'https://blog.butubb.cn/'
 languageCode = 'zh-cn'
 title = '日志'
 theme = 'PaperMod'
