@@ -1,6 +1,6 @@
 baseURL = 'https://blog.butubb.cn/'
 languageCode = 'zh-cn'
-title = 'life's logs'
+title = "life's logs"
 theme = 'PaperMod'
 defaultContentLanguage = 'zh-cn'
 
