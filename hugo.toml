@@ -38,3 +38,8 @@ defaultContentLanguage = 'zh-cn'
   name = "搜索"
   url = "/search"
   weight = 4
+
+[[menu.main]]
+  name = "Run"
+  url = "https://run.butubb.cn"
+  weight = 5
