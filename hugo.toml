@@ -7,12 +7,20 @@ defaultContentLanguage = 'zh-cn'
 [outputs]
   home = ["HTML", "RSS", "JSON"]
 
+# ===== 新增区域：告诉 Hugo 允许渲染安全的 HTML =====
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true # 允许在 Markdown 中渲染原始 HTML
+
 [params]
+  [params.homeInfoParams]
+    Title = "<img src=\"https://cdn.jsdelivr.net/gh/8butubb/image/img/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_2026-03-07_095359_687.jpg\" alt=\"butubb\" style=\"width:120px;height:120px;border-radius:50%;display:block;margin:0 auto 1rem auto;\">\n你好！我是 butubb，安徽人，现工作居住在苏州。"
+    Content = "喜欢互联网冲浪🏄‍♂️，折腾机器💻，看电影🎥，编程🧑‍💻，听音乐🎶等"
+
   ShowToc = true
   defaultTheme = "auto"
-  # 内联表必须写在一行内
-  homeInfoParams = { Title = "你好！我是butubb，安徽人，现工作居住在苏州。", Content = "喜欢互联网冲浪🏄‍♂️，折腾机器💻，看电影🎥，编程🧑‍💻，听音乐🎶等" }
-
+  mainSections = ["posts"]
 
 [taxonomies]
   tag = "tags"
