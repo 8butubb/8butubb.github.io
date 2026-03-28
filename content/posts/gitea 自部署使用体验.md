@@ -39,113 +39,72 @@ Gitea 采用微内核 + 插件扩展的轻量架构，核心组件如下：
 ### 架构图（Mermaid）
 
 ```mermaid
-graph TB
-    subgraph "客户端层"
-        A[Web浏览器]
-        B[Git客户端]
-        C[API客户端]
+graph TD
+    %% 客户端层
+    Client_Web[Web浏览器]
+    Client_Git[Git客户端]
+    Client_API[API客户端]
+
+    %% 负载层
+    Proxy[Nginx / 反向代理]
+
+    %% 核心服务层
+    subgraph Gitea核心服务
+        Web[Web服务 / Gin]
+        API[RESTful API]
+        Git[Git协议处理器]
+        Auth[认证授权 / Session / OAuth]
     end
 
-    subgraph "负载均衡/反向代理"
-        D[Nginx/Apache]
+    %% 业务逻辑层
+    subgraph 业务逻辑层
+        Repo[仓库管理]
+        User[用户与组织]
+        ACL[权限控制 RBAC]
+        Hook[WebHook]
+        Mail[邮件服务]
     end
 
-    subgraph "Gitea核心服务"
-        E[Web服务<br/>Gin框架]
-        F[API服务<br/>RESTful]
-        G[Git服务<br/>SSH/HTTP]
-        H[认证授权<br/>Session/OAuth]
+    %% 存储层
+    subgraph 数据存储层
+        DB[(数据库<br/>SQLite/MySQL)]
+        FS[(Git仓库文件)]
+        LFS[(LFS对象)]
+        Cache[(Redis缓存)]
     end
 
-    subgraph "业务逻辑层"
-        I[仓库管理]
-        J[用户管理]
-        K[组织管理]
-        L[权限控制<br/>RBAC]
-        M[WebHook]
-        N[邮件服务]
-    end
+    %% 扩展
+    Runner[[Gitea Runner<br/>CI/CD]]
+    Pack[[包管理<br/>npm/docker]]
 
-    subgraph "数据存储层"
-        O[数据库<br/>SQLite/MySQL/PostgreSQL]
-        P[Git仓库<br/>文件系统]
-        Q[LFS对象存储]
-        R[缓存<br/>Redis/Memcached]
-    end
+    %% 关系连线
+    Client_Web --> Proxy
+    Client_Git --> Proxy
+    Client_API --> Proxy
 
-    subgraph "后台任务"
-        S[定时任务<br/>Cron]
-        T[队列处理<br/>WebHook/邮件]
-        U[索引构建]
-        V[镜像同步]
-    end
+    Proxy --> Web
+    Proxy --> API
+    Proxy --> Git
 
-    subgraph "可选扩展"
-        W[Gitea Runner<br/>CI/CD]
-        X[包管理<br/>npm/docker/maven]
-        Y[代码搜索<br/>Bleve]
-    end
+    Web --> Auth
+    API --> Auth
+    Git --> Auth
 
-    A --> D
-    B --> D
-    C --> D
-    
-    D --> E
-    D --> F
-    D --> G
-    
-    E --> H
-    F --> H
-    G --> H
-    
-    H --> I
-    H --> J
-    H --> K
-    H --> L
-    
-    I --> O
-    I --> P
-    J --> O
-    K --> O
-    L --> O
-    
-    I --> Q
-    M --> T
-    N --> T
-    
-    S --> V
-    U --> R
-    T --> N
-    
-    W --> P
-    X --> Q
-    Y --> R
+    Auth --> Repo
+    Auth --> User
+    Auth --> ACL
 
-    style A fill:#e1f5fe
-    style B fill:#e1f5fe
-    style C fill:#e1f5fe
-    style D fill:#fff3e0
-    style E fill:#f3e5f5
-    style F fill:#f3e5f5
-    style G fill:#f3e5f5
-    style H fill:#f3e5f5
-    style I fill:#e8f5e9
-    style J fill:#e8f5e9
-    style K fill:#e8f5e9
-    style L fill:#e8f5e9
-    style M fill:#e8f5e9
-    style N fill:#e8f5e9
-    style O fill:#ffebee
-    style P fill:#ffebee
-    style Q fill:#ffebee
-    style R fill:#ffebee
-    style S fill:#fce4ec
-    style T fill:#fce4ec
-    style U fill:#fce4ec
-    style V fill:#fce4ec
-    style W fill:#e0f2f1
-    style X fill:#e0f2f1
-    style Y fill:#e0f2f1
+    Repo --> DB
+    Repo --> FS
+    Repo --> LFS
+    User --> DB
+    ACL --> DB
+
+    Repo --> Hook
+    Hook --> Mail
+
+    Runner -.-> API
+    Pack -.-> FS
 ```
 
 ### 架构说明
@@ -161,124 +120,6 @@ graph TB
 7. **扩展功能**：提供 CI/CD、包管理和代码搜索等可选功能
 
 这种架构设计使得 Gitea 具有轻量级、高可用和易扩展的特点。
-
-```mermaid
-graph TB
-    subgraph "客户端层"
-        A[Web浏览器]
-        B[Git客户端]
-        C[API客户端]
-    end
-    
-    subgraph "负载均衡层"
-        D[Nginx/反向代理]
-    end
-    
-    subgraph "Gitea核心服务"
-        E[Web服务<br/>Gin框架]
-        F[REST API]
-        G[Git协议处理器]
-        H[认证授权<br/>RBAC]
-        I[中间件<br/>CSRF/Session]
-    end
-    
-    subgraph "业务逻辑层"
-        J[仓库管理]
-        K[用户/组织管理]
-        L[问题跟踪]
-        M[PR/MR流程]
-        N[WebHook系统]
-        O[通知系统]
-    end
-    
-    subgraph "数据存储层"
-        P[Git仓库<br/>文件系统]
-        Q[SQLite/MySQL<br/>PostgreSQL]
-        R[LFS对象存储]
-        S[会话存储]
-        T[缓存Redis]
-    end
-    
-    subgraph "后台服务"
-        U[定时任务<br/>镜像同步]
-        V[队列服务<br/>异步任务]
-        W[邮件服务]
-        X[索引构建]
-    end
-    
-    subgraph "扩展组件"
-        Y[Gitea Runner<br/>CI/CD]
-        Z[包管理<br/>npm/maven]
-        AA[容器注册表]
-    end
-    
-    A --> D
-    B --> D
-    C --> D
-    
-    D --> E
-    D --> F
-    D --> G
-    
-    E --> H
-    F --> H
-    G --> H
-    
-    H --> I
-    I --> J
-    I --> K
-    I --> L
-    I --> M
-    I --> N
-    I --> O
-    
-    J --> P
-    K --> Q
-    L --> Q
-    M --> P
-    N --> V
-    O --> W
-    
-    V --> U
-    V --> X
-    V --> W
-    
-    J --> Y
-    J --> Z
-    J --> AA
-    
-    P --> R
-    Q --> S
-    Q --> T
-
-    style A fill:#e1f5fe
-    style B fill:#e1f5fe
-    style C fill:#e1f5fe
-    style D fill:#fff3e0
-    style E fill:#f3e5f5
-    style F fill:#f3e5f5
-    style G fill:#f3e5f5
-    style H fill:#f3e5f5
-    style I fill:#f3e5f5
-    style J fill:#e8f5e8
-    style K fill:#e8f5e8
-    style L fill:#e8f5e8
-    style M fill:#e8f5e8
-    style N fill:#e8f5e8
-    style O fill:#e8f5e8
-    style P fill:#fce4ec
-    style Q fill:#fce4ec
-    style R fill:#fce4ec
-    style S fill:#fce4ec
-    style T fill:#fce4ec
-    style U fill:#fff9c4
-    style V fill:#fff9c4
-    style W fill:#fff9c4
-    style X fill:#fff9c4
-    style Y fill:#e0f2f1
-    style Z fill:#e0f2f1
-    style AA fill:#e0f2f1
-```
 
 ### 架构特点说明
 
