@@ -39,7 +39,7 @@
       <span>五</span>
       <span></span>
     </div>
-    <div class="heatmap-scroll" id="heatmap-scroll">
+    <div class="heatmap-scroll">
       <div class="heatmap-months" id="heatmap-months"></div>
       <div class="heatmap-grid" id="heatmap-grid"></div>
     </div>
@@ -191,7 +191,7 @@
 document.addEventListener("DOMContentLoaded", function() {
     const postsData = [
       {{- range where site.RegularPages "Type" "in" site.Params.mainSections }}
-      { date: "{{ .Date.Format "2006-01-02" }}", title: "{{ .Title | htmlEscape }}" },
+      { date: `{{ .Date.Format "2006-01-02" }}`, title: `{{ .Title | plainify }}` },
       {{- end }}
     ];
 
@@ -204,24 +204,37 @@ document.addEventListener("DOMContentLoaded", function() {
   const grid = document.getElementById('heatmap-grid');
   const monthsContainer = document.getElementById('heatmap-months');
   const tooltip = document.getElementById('heatmap-tooltip');
-  const scrollContainer = document.getElementById('heatmap-scroll');
+  const scrollContainer = document.querySelector('.heatmap-scroll');
   const containerWrapper = document.querySelector('.heatmap-container');
 
   function renderHeatmap() {
+    if (!grid || !monthsContainer) return;
     grid.innerHTML = '';
     monthsContainer.innerHTML = '';
     
+    // Check if elements are available
+    if (!scrollContainer || !containerWrapper) return;
+    
     // Calculate how many weeks we can fit based on container width
     const cellWidth = 15; // 12px cell + 3px gap
-    const containerWidth = containerWrapper.clientWidth - 40; // 40px for padding and weekdays
+    
+    let containerWidth = containerWrapper.clientWidth;
+    if (containerWidth <= 0) {
+      containerWidth = Math.min(window.innerWidth, 800);
+    }
+    containerWidth -= 40; // 40px for padding and weekdays
+
     // Max weeks is 53, but limit to what fits in container
     const maxWeeks = Math.floor(containerWidth / cellWidth);
     const weeksToShow = Math.min(53, Math.max(10, maxWeeks)); // show at least 10 weeks
     const daysToShow = weeksToShow * 7;
 
     const today = new Date();
-    const startDate = new Date(today);
-    startDate.setDate(today.getDate() - daysToShow + 1);
+    // 强制使用本地时区并去除时间影响
+    today.setHours(23, 59, 59, 999);
+    
+    const startDate = new Date(today.getTime());
+    startDate.setDate(startDate.getDate() - daysToShow + 1);
     
     // Adjust start date to be a Sunday
     const startDay = startDate.getDay();
@@ -233,10 +246,10 @@ document.addEventListener("DOMContentLoaded", function() {
     let weekIndex = 0;
 
     // Calculate total days from adjusted start date to today
-    const totalDays = Math.floor((today - startDate) / (1000 * 60 * 60 * 24)) + 1;
+    const totalDays = Math.round((today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
 
     for (let i = 0; i < totalDays; i++) {
-      const d = new Date(startDate);
+      const d = new Date(startDate.getTime());
       d.setDate(startDate.getDate() + i);
       
       const y = d.getFullYear();
@@ -256,8 +269,9 @@ document.addEventListener("DOMContentLoaded", function() {
       else if (count >= 4) level = 4;
       cell.setAttribute('data-level', level);
       
+      // Ensure the first day starts on the correct row
       if (i === 0) {
-        cell.style.gridRow = d.getDay() + 1;
+        cell.style.gridRow = startDate.getDay() + 1;
       }
       
       if (d.getMonth() !== currentMonth) {
@@ -268,7 +282,7 @@ document.addEventListener("DOMContentLoaded", function() {
           monthLabel.textContent = (d.getMonth() + 1) + '月';
           // Calculate right offset
           const rightOffset = ((totalDays - i) / 7) * cellWidth - cellWidth;
-          if (rightOffset > 0) {
+          if (rightOffset >= 0) {
             monthLabel.style.right = `${rightOffset}px`;
             monthsContainer.appendChild(monthLabel);
           }
@@ -328,15 +342,23 @@ document.addEventListener("DOMContentLoaded", function() {
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => {
+      renderHeatmap();
       // scroll to right on resize
-      scrollContainer.scrollLeft = scrollContainer.scrollWidth;
+      if (scrollContainer) {
+        scrollContainer.scrollLeft = scrollContainer.scrollWidth;
+      }
     }, 100);
   });
   
+  // render initially
+  renderHeatmap();
+  
   // scroll to right initially
   setTimeout(() => {
-    scrollContainer.scrollLeft = scrollContainer.scrollWidth;
-  }, 10);
+    if (scrollContainer) {
+      scrollContainer.scrollLeft = scrollContainer.scrollWidth;
+    }
+  }, 100);
 });
 </script>
 <!-- Heatmap End -->
