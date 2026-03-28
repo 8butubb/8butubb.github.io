@@ -1,0 +1,397 @@
+{{- define "main" }}
+
+<header class="page-header">
+  <h1>
+    {{ .Title }}
+    {{- if (.Param "ShowRssButtonInSectionTermList") }}
+    {{- $rss := (.OutputFormats.Get "rss") }}
+    {{- if (eq .Kind `page`) }}
+    {{- $rss = (.Parent.OutputFormats.Get "rss") }}
+    {{- end }}
+    {{- with $rss }}
+    <a href="{{ .RelPermalink }}" title="RSS" aria-label="RSS">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" height="23">
+        <path d="M4 11a9 9 0 0 1 9 9" />
+        <path d="M4 4a16 16 0 0 1 16 16" />
+        <circle cx="5" cy="19" r="1" />
+      </svg>
+    </a>
+    {{- end }}
+    {{- end }}
+  </h1>
+  {{- if .Description }}
+  <div class="post-description">
+    {{ .Description }}
+  </div>
+  {{- end }}
+</header>
+
+<!-- Heatmap Start -->
+<div class="heatmap-wrapper">
+  <div class="heatmap-container" id="heatmap-container">
+    <div class="heatmap-weekdays">
+      <span></span>
+      <span>一</span>
+      <span></span>
+      <span>三</span>
+      <span></span>
+      <span>五</span>
+      <span></span>
+    </div>
+    <div class="heatmap-scroll" id="heatmap-scroll">
+      <div class="heatmap-months" id="heatmap-months"></div>
+      <div class="heatmap-grid" id="heatmap-grid"></div>
+    </div>
+  </div>
+  <div class="heatmap-legend">
+    <span>少</span>
+    <div class="heatmap-cell" data-level="0"></div>
+    <div class="heatmap-cell" data-level="1"></div>
+    <div class="heatmap-cell" data-level="2"></div>
+    <div class="heatmap-cell" data-level="3"></div>
+    <div class="heatmap-cell" data-level="4"></div>
+    <span>多</span>
+  </div>
+  <div class="heatmap-tooltip" id="heatmap-tooltip"></div>
+</div>
+
+<style>
+  :root {
+    --heatmap-level-0: #ebedf0;
+    --heatmap-level-1: #9be9a8;
+    --heatmap-level-2: #40c463;
+    --heatmap-level-3: #30a14e;
+    --heatmap-level-4: #216e39;
+    --heatmap-tooltip-bg: #fff;
+    --heatmap-tooltip-border: #d0d7de;
+  }
+  html.dark, html[data-theme="dark"], body.dark {
+    --heatmap-level-0: #161b22;
+    --heatmap-level-1: #0e4429;
+    --heatmap-level-2: #006d32;
+    --heatmap-level-3: #26a641;
+    --heatmap-level-4: #39d353;
+    --heatmap-tooltip-bg: #1c2128;
+    --heatmap-tooltip-border: #444c56;
+  }
+  .heatmap-wrapper {
+    margin: 1rem 0 2rem 0;
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+  }
+  .heatmap-container {
+    display: flex;
+    align-items: flex-end;
+    padding: 1rem;
+    background: var(--entry);
+    border-radius: var(--radius);
+    justify-content: center;
+  }
+  .heatmap-weekdays {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    font-size: 10px;
+    color: var(--secondary);
+    padding-right: 8px;
+    padding-bottom: 2px;
+    flex-shrink: 0;
+  }
+  .heatmap-weekdays span {
+    height: 12px;
+    line-height: 12px;
+  }
+  .heatmap-scroll {
+    position: relative;
+    flex-grow: 1;
+    overflow: hidden;
+    display: flex;
+    justify-content: flex-end;
+  }
+  .heatmap-scroll::-webkit-scrollbar {
+    height: 6px;
+  }
+  .heatmap-scroll::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 3px;
+  }
+  .heatmap-months {
+    height: 20px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    font-size: 10px;
+    color: var(--secondary);
+    pointer-events: none;
+  }
+  .heatmap-months span {
+    position: absolute;
+    bottom: 4px;
+  }
+  .heatmap-grid {
+    display: grid;
+    grid-template-rows: repeat(7, 12px);
+    grid-auto-flow: column;
+    gap: 3px;
+    margin-top: 20px;
+  }
+  .heatmap-cell {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+    background-color: var(--heatmap-level-0);
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .heatmap-cell:hover {
+    opacity: 0.7;
+    outline: 1px solid var(--border);
+  }
+  .heatmap-cell[data-level="1"] { background-color: var(--heatmap-level-1); }
+  .heatmap-cell[data-level="2"] { background-color: var(--heatmap-level-2); }
+  .heatmap-cell[data-level="3"] { background-color: var(--heatmap-level-3); }
+  .heatmap-cell[data-level="4"] { background-color: var(--heatmap-level-4); }
+  
+  .heatmap-legend {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 4px;
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--secondary);
+    width: 100%;
+    padding-right: 0.5rem;
+  }
+  .heatmap-legend span {
+    margin: 0 4px;
+  }
+  
+  .heatmap-tooltip {
+    display: none;
+    position: absolute;
+    background: var(--heatmap-tooltip-bg);
+    color: var(--primary);
+    border: 1px solid var(--heatmap-tooltip-border);
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    pointer-events: none;
+    z-index: 1000;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    white-space: nowrap;
+    line-height: 1.5;
+  }
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const postsData = [
+      {{- range where site.RegularPages "Type" "in" site.Params.mainSections }}
+      { date: "{{ .Date.Format "2006-01-02" }}", title: "{{ .Title | htmlEscape }}" },
+      {{- end }}
+    ];
+
+  const postMap = new Map();
+  postsData.forEach(p => {
+    if (!postMap.has(p.date)) postMap.set(p.date, []);
+    postMap.get(p.date).push(p);
+  });
+
+  const grid = document.getElementById('heatmap-grid');
+  const monthsContainer = document.getElementById('heatmap-months');
+  const tooltip = document.getElementById('heatmap-tooltip');
+  const scrollContainer = document.getElementById('heatmap-scroll');
+  const containerWrapper = document.querySelector('.heatmap-container');
+
+  function renderHeatmap() {
+    grid.innerHTML = '';
+    monthsContainer.innerHTML = '';
+    
+    // Calculate how many weeks we can fit based on container width
+    const cellWidth = 15; // 12px cell + 3px gap
+    const containerWidth = containerWrapper.clientWidth - 40; // 40px for padding and weekdays
+    // Max weeks is 53, but limit to what fits in container
+    const maxWeeks = Math.floor(containerWidth / cellWidth);
+    const weeksToShow = Math.min(53, Math.max(10, maxWeeks)); // show at least 10 weeks
+    const daysToShow = weeksToShow * 7;
+
+    const today = new Date();
+    const startDate = new Date(today);
+    startDate.setDate(today.getDate() - daysToShow + 1);
+    
+    // Adjust start date to be a Sunday
+    const startDay = startDate.getDay();
+    if (startDay !== 0) {
+      startDate.setDate(startDate.getDate() - startDay);
+    }
+
+    let currentMonth = -1;
+    let weekIndex = 0;
+
+    // Calculate total days from adjusted start date to today
+    const totalDays = Math.floor((today - startDate) / (1000 * 60 * 60 * 24)) + 1;
+
+    for (let i = 0; i < totalDays; i++) {
+      const d = new Date(startDate);
+      d.setDate(startDate.getDate() + i);
+      
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      const localDateStr = `${y}-${m}-${day}`;
+      
+      const count = postMap.has(localDateStr) ? postMap.get(localDateStr).length : 0;
+      
+      const cell = document.createElement('div');
+      cell.className = 'heatmap-cell';
+      
+      let level = 0;
+      if (count === 1) level = 1;
+      else if (count === 2) level = 2;
+      else if (count === 3) level = 3;
+      else if (count >= 4) level = 4;
+      cell.setAttribute('data-level', level);
+      
+      if (i === 0) {
+        cell.style.gridRow = d.getDay() + 1;
+      }
+      
+      if (d.getMonth() !== currentMonth) {
+        currentMonth = d.getMonth();
+        // Only show month label if it's the first week of the month or we are at the start
+        if (weekIndex > 0 || d.getDate() < 15) {
+          const monthLabel = document.createElement('span');
+          monthLabel.textContent = (d.getMonth() + 1) + '月';
+          // Calculate right offset
+          const rightOffset = ((totalDays - i) / 7) * cellWidth - cellWidth;
+          if (rightOffset > 0) {
+            monthLabel.style.right = `${rightOffset}px`;
+            monthsContainer.appendChild(monthLabel);
+          }
+        }
+      }
+      
+      if (d.getDay() === 6) weekIndex++;
+      
+      cell.addEventListener('mouseenter', (e) => {
+        const titles = postMap.has(localDateStr) 
+          ? postMap.get(localDateStr).map(p => p.title).join('<br>') 
+          : '无文章';
+        const countText = count > 0 ? `${count} 篇文章` : '0 篇文章';
+        tooltip.innerHTML = `<strong>${localDateStr}</strong><br>${countText}<br><span style="font-size: 0.8em; color: var(--secondary)">${titles}</span>`;
+        
+        tooltip.style.display = 'block';
+        
+        const rect = cell.getBoundingClientRect();
+        const tooltipRect = tooltip.getBoundingClientRect();
+        
+        // Calculate position relative to viewport
+        let top = rect.top - tooltipRect.height - 8;
+        let left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
+        
+        // Adjust if it goes off screen top
+        if (top < 10) {
+          top = rect.bottom + 8;
+        }
+        
+        // Adjust if it goes off screen left/right
+        if (left < 10) {
+          left = 10;
+        } else if (left + tooltipRect.width > window.innerWidth - 10) {
+          left = window.innerWidth - tooltipRect.width - 10;
+        }
+        
+        tooltip.style.position = 'fixed';
+        tooltip.style.left = `${left}px`;
+        tooltip.style.top = `${top}px`;
+        tooltip.style.transform = 'none';
+        tooltip.style.marginTop = '0';
+      });
+      
+      cell.addEventListener('mouseleave', () => {
+        tooltip.style.display = 'none';
+      });
+      
+      grid.appendChild(cell);
+    }
+  }
+
+  // Initial render
+  renderHeatmap();
+
+  // Re-render on window resize to adjust visible weeks
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      // scroll to right on resize
+      scrollContainer.scrollLeft = scrollContainer.scrollWidth;
+    }, 100);
+  });
+  
+  // scroll to right initially
+  setTimeout(() => {
+    scrollContainer.scrollLeft = scrollContainer.scrollWidth;
+  }, 10);
+});
+</script>
+<!-- Heatmap End -->
+
+{{- $pages := where site.RegularPages "Type" "in" site.Params.mainSections }}
+
+{{- if site.Params.ShowAllPagesInArchive }}
+{{- $pages = site.RegularPages }}
+{{- end }}
+
+{{- range $pages.GroupByPublishDate "2006" }}
+{{- if ne .Key "0001" }}
+<div class="archive-year">
+  {{- $year := replace .Key "0001" "" }}
+  <h2 class="archive-year-header" id="{{ $year }}">
+    <a class="archive-header-link" href="#{{ $year }}">
+      {{- $year -}}
+    </a>
+    <sup class="archive-count">&nbsp;{{ len .Pages }}</sup>
+  </h2>
+  {{- range .Pages.GroupByDate "January" }}
+  <div class="archive-month">
+    <h3 class="archive-month-header" id="{{ $year }}-{{ .Key }}">
+      <a class="archive-header-link" href="#{{ $year }}-{{ .Key }}">
+        {{- .Key -}}
+      </a>
+      <sup class="archive-count">&nbsp;{{ len .Pages }}</sup>
+    </h3>
+    <div class="archive-posts">
+      {{- range .Pages }}
+      {{- if eq .Kind "page" }}
+      <div class="archive-entry">
+        <h3 class="archive-entry-title entry-hint-parent">
+          {{- .Title | markdownify }}
+          {{- if .Draft }}
+          <span class="entry-hint" title="Draft">
+            <svg xmlns="http://www.w3.org/2000/svg" height="15" viewBox="0 -960 960 960" fill="currentColor">
+              <path
+                d="M160-410v-60h300v60H160Zm0-165v-60h470v60H160Zm0-165v-60h470v60H160Zm360 580v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q9 9 13 20t4 22q0 11-4.5 22.5T862.09-380L643-160H520Zm300-263-37-37 37 37ZM580-220h38l121-122-18-19-19-18-122 121v38Zm141-141-19-18 37 37-18-19Z" />
+            </svg>
+          </span>
+          {{- end }}
+        </h3>
+        <div class="archive-meta">
+          {{- partial "post_meta.html" . -}}
+        </div>
+        <a class="entry-link" aria-label="post link to {{ .Title | plainify }}" href="{{ .Permalink }}"></a>
+      </div>
+      {{- end }}
+      {{- end }}
+    </div>
+  </div>
+  {{- end }}
+</div>
+{{- end }}
+{{- end }}
+
+{{- end }}{{/* end main */}}
