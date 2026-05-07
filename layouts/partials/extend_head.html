@@ -1,0 +1,9 @@
+{{- if eq .Type "gallery" }}
+{{- $galleryJS := resources.Get "js/gallery.js" | minify }}
+{{- if not site.Params.assets.disableFingerprinting }}
+{{- $galleryJS = $galleryJS | fingerprint }}
+<script defer crossorigin="anonymous" src="{{ $galleryJS.RelPermalink }}" integrity="{{ $galleryJS.Data.Integrity }}"></script>
+{{- else }}
+<script defer crossorigin="anonymous" src="{{ $galleryJS.RelPermalink }}"></script>
+{{- end }}
+{{- end }}

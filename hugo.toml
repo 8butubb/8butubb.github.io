@@ -7,11 +7,10 @@ defaultContentLanguage = 'zh-cn'
 [outputs]
   home = ["HTML", "RSS", "JSON"]
 
-# ===== 新增区域：告诉 Hugo 允许渲染安全的 HTML =====
 [markup]
   [markup.goldmark]
     [markup.goldmark.renderer]
-      unsafe = true # 允许在 Markdown 中渲染原始 HTML
+      unsafe = true
 
 [params]
   [params.homeInfoParams]
@@ -48,6 +47,11 @@ defaultContentLanguage = 'zh-cn'
   weight = 4
 
 [[menu.main]]
+  name = "画廊"
+  url = "/gallery"
+  weight = 5
+
+[[menu.main]]
   name = "Run"
   url = "https://run.butubb.cn"
-  weight = 5
+  weight = 6

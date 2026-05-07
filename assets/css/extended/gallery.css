@@ -1,0 +1,303 @@
+/* ========================================
+   Gallery — PaperMod Design Language
+   ======================================== */
+
+/* ---------- Page Layout ---------- */
+/* Widen the main container for gallery pages */
+.main:has(.gallery-page-content) {
+    max-width: calc(var(--nav-width) + var(--gap) * 2);
+}
+
+.gallery-page-content {
+    max-width: 100%;
+}
+
+/* ---------- Album Section ---------- */
+.gallery-album {
+    background: var(--entry);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: var(--gap);
+    margin-bottom: var(--gap);
+    transition: transform 0.1s;
+}
+
+.gallery-album:active {
+    transform: scale(0.99);
+}
+
+.gallery-album-header {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.gallery-album-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--primary);
+    line-height: 1.3;
+}
+
+.gallery-album-count {
+    font-size: 13px;
+    color: var(--secondary);
+    flex-shrink: 0;
+}
+
+.gallery-album-desc {
+    color: var(--secondary);
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: var(--content-gap);
+}
+
+/* ---------- Image Grid ---------- */
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: calc(var(--content-gap) * 0.5);
+}
+
+.gallery-card {
+    position: relative;
+    border-radius: var(--radius);
+    overflow: hidden;
+    cursor: pointer;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    transition: transform 0.1s;
+}
+
+[data-theme="dark"] .gallery-card {
+    background: var(--tertiary);
+}
+
+.gallery-card:active {
+    transform: scale(0.96);
+}
+
+.gallery-card-img {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.gallery-card-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.gallery-card:hover .gallery-card-img img {
+    transform: scale(1.05);
+}
+
+.gallery-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0);
+    transition: background 0.2s ease;
+    pointer-events: none;
+    border-radius: inherit;
+}
+
+.gallery-card:hover::after {
+    background: rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="dark"] .gallery-card:hover::after {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+/* ---------- Empty State ---------- */
+.gallery-empty {
+    text-align: center;
+    padding: calc(var(--gap) * 3) 0;
+    color: var(--secondary);
+}
+
+.gallery-empty svg {
+    margin: 0 auto var(--gap);
+    opacity: 0.4;
+}
+
+.gallery-empty p {
+    font-size: 16px;
+}
+
+/* ---------- Lightbox ---------- */
+.lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+
+.lightbox.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.lightbox-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+}
+
+[data-theme="dark"] .lightbox-backdrop {
+    background: rgba(0, 0, 0, 0.92);
+}
+
+.lightbox-body {
+    position: relative;
+    max-width: 92vw;
+    max-height: 88vh;
+    z-index: 1;
+}
+
+.lightbox-body img {
+    max-width: 92vw;
+    max-height: 88vh;
+    object-fit: contain;
+    border-radius: var(--radius);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Lightbox Buttons */
+.lightbox-btn {
+    position: absolute;
+    z-index: 2;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: white;
+    transition: background 0.2s, transform 0.1s;
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+    padding: 0;
+}
+
+.lightbox-btn:hover {
+    background: rgba(255, 255, 255, 0.22);
+}
+
+.lightbox-btn:active {
+    transform: scale(0.92);
+}
+
+.lightbox-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+.lightbox-close-btn {
+    top: 20px;
+    right: 20px;
+}
+
+.lightbox-prev-btn {
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.lightbox-prev-btn:active {
+    transform: translateY(-50%) scale(0.92);
+}
+
+.lightbox-next-btn {
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.lightbox-next-btn:active {
+    transform: translateY(-50%) scale(0.92);
+}
+
+.lightbox-counter {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 13px;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 4px 12px;
+    border-radius: 20px;
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 768px) {
+    :root {
+        --gap: 14px;
+    }
+
+    .gallery-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+    }
+
+    .gallery-album {
+        padding: 14px;
+    }
+
+    .gallery-album-title {
+        font-size: 20px;
+    }
+
+    .lightbox-btn {
+        width: 38px;
+        height: 38px;
+    }
+
+    .lightbox-btn svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    .lightbox-prev-btn {
+        left: 10px;
+    }
+
+    .lightbox-next-btn {
+        right: 10px;
+    }
+
+    .lightbox-close-btn {
+        top: 10px;
+        right: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .gallery-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .gallery-album-title {
+        font-size: 18px;
+    }
+}
