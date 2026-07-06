@@ -1,6 +1,6 @@
 ---
 title: 给 Hugo 博客归档页加上 Github 风格热力图
-date: 2026-03-30T08:26:31Z
+date: 2026-03-31T00:26:31Z
 draft: false
 tags: [博客, Hugo, 前端, 魔改]
 categories: [博客]

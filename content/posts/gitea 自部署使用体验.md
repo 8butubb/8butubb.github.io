@@ -1,7 +1,7 @@
 ---
 title: gitea 自部署使用体验
 tags: [git, docker]
-date: 2025-11-29T00:00:00Z
+date: 2025-11-29T16:00:00Z
 summary: 本文基于 Docker Compose 一键启动 Gitea + Gitea Runner 的实战记录。
 ---
 > 注意：本文基于 Docker Compose 一键启动 Gitea + Gitea Runner 的实战记录。
