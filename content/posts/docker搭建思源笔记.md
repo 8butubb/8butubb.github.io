@@ -1,10 +1,9 @@
 ---
 title: docker搭建思源笔记
-tags: ["linux","docker"]
-date: 2024-11-23
-summary: "docker搭建思源笔记..."
+tags: [linux, docker]
+date: 2024-11-24T08:00:00Z
+summary: docker搭建思源笔记...
 ---
-
 - `PUID`: 自定义用户 ID（可选，如果未提供，默认为 `1000`）
 - `PGID`: 自定义组 ID（可选，如果未提供，默认为 `1000`）
 - `workspace_dir_host`：宿主机上的工作空间文件夹路径

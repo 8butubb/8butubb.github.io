@@ -1,8 +1,8 @@
 ---
 title: markdown语法使用指南
-tags: ["markdown"]
-date: 2025-03-06
-summary: "用来学习markdown语法"
+tags: [markdown]
+date: 2025-03-07T08:00:00Z
+summary: 用来学习markdown语法
 ---
 ## 基础语法
 

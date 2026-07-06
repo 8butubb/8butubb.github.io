@@ -1,8 +1,8 @@
 ---
 title: zerotier使用指南
-tags: ["linux"]
-date: 2025-09-07
-summary: "zerotier使用指南"
+tags: [linux]
+date: 2025-09-08T08:00:00Z
+summary: zerotier使用指南
 ---
 # 注册
 
