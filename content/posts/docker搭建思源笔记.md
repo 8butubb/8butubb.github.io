@@ -1,7 +1,7 @@
 ---
 title: docker搭建思源笔记
 tags: [linux, docker]
-date: 2024-11-24T08:00:00Z
+date: 2024-11-25T00:00:00Z
 summary: docker搭建思源笔记...
 ---
 - `PUID`: 自定义用户 ID（可选，如果未提供，默认为 `1000`）

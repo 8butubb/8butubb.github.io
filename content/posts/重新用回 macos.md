@@ -1,7 +1,7 @@
 ---
 title: 重新用回macos
 tags: [日常, mac]
-date: 2025-12-02T08:00:00Z
+date: 2025-12-03T00:00:00Z
 summary: ""
 ---
 最近几天，我重新用回了去年使用的macbookpro，屏幕有一条黑线，使用的是外接显示器

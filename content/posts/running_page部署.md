@@ -1,7 +1,7 @@
 ---
 title: running_page部署
 tags: [学习, 运动]
-date: 2026-03-08T08:00:00Z
+date: 2026-03-09T00:00:00Z
 ---
 最近我的博客上线了一个新的页面，[running_page](https://run.butubb.cn)
 
