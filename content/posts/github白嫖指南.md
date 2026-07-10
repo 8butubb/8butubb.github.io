@@ -1,9 +1,8 @@
 ---
 title: GitHub 白嫖指南
-tags: ["网站", "GitHub", "博客"]
-date: 2026-03-19
+tags: [网站, GitHub, 博客]
+date: 2026-03-21T00:00:00Z
 ---
-
 ## GitHub 白嫖指南
 
 GitHub 俗称"男人的交友市场"，但它的实用价值远不止如此。今天就来分享一下我在 GitHub 上白嫖的那些东西。

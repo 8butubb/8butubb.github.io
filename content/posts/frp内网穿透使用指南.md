@@ -1,8 +1,8 @@
 ---
 title: frp内网穿透使用指南
-tags: ["linux"]
-date: 2024-12-02
-summary: "frp（Fast Reverse Proxy）是一个高性能的反向代理应用，主要用于内网穿透。..."
+tags: [linux]
+date: 2024-12-05T08:00:00Z
+summary: frp（Fast Reverse Proxy）是一个高性能的反向代理应用，主要用于内网穿透。...
 ---
 ## 什么是 frp？
 

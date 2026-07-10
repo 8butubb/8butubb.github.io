@@ -1,10 +1,9 @@
 ---
 title: gitea 自部署使用体验
-tags: ["git","docker"]
-date: 2025-11-27
-summary: "本文基于 Docker Compose 一键启动 Gitea + Gitea Runner 的实战记录。"
+tags: [git, docker]
+date: 2025-11-30T08:00:00Z
+summary: 本文基于 Docker Compose 一键启动 Gitea + Gitea Runner 的实战记录。
 ---
-
 > 注意：本文基于 Docker Compose 一键启动 Gitea + Gitea Runner 的实战记录。
 
 ## 为什么使用 gitea
