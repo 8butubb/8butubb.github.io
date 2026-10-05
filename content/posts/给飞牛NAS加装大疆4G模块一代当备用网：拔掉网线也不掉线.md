@@ -21,6 +21,10 @@ NAS 上的东西就**全部对外失联**：远程访问进不来、自建的机
 
 主角是一块**大疆 4G 模块一代**（型号 QDC507）—— 本来是大疆给无人机做 4G 图传增强用的，我在淘宝二手渠道 **100 元**拿下。现在回头看，这价钱也算「高价入手」了 😂（同款行情早就跌到几十块）。
 
+![大疆 4G 模块一代（DJI Cellular 模块）](https://cdn.jsdelivr.net/gh/8butubb/image/img/dji-cellular-4g-module-gen1.jpg)
+
+*大疆 4G 模块一代（DJI Cellular 模块）：U 盘大小的黑盒子，插上电脑就是一块普通 4G 网卡*
+
 它本质上是**深度定制的 Quectel LTE 模块**，识别信息非常诚实：
 
 ```bash
